@@ -47,6 +47,7 @@ class GReport:
             'tests': int(self.root.attrib['tests']),
             'failures': int(self.root.attrib['failures']),
             'disabled': int(self.root.attrib['disabled']),
+            'passrate': float(),
             'testsuites': list()
         }
 
@@ -56,6 +57,7 @@ class GReport:
                 'tests': int(child.attrib['tests']),
                 'failures': int(child.attrib['failures']),
                 'disabled': int(child.attrib['disabled']),
+                'passrate': float()
             }
 
             test = list()
@@ -76,9 +78,14 @@ class GReport:
                 test.append(info)
 
             suite['testsuite'] = test
-            json['testsuites'].append(suite)
+            json['testsuites'].append(self._round(suite))
 
-        return json
+        return self._round(json)
+
+    @staticmethod
+    def _round(suite):
+        suite['passrate'] = round((suite['tests'] - suite['failures'] - suite['disabled']) / suite['tests'] * 100, 2)
+        return suite
 
     def create_html(self, output, template_file='template.html'):
         json = self.parse_to_json()
@@ -90,8 +97,8 @@ class GReport:
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument("-f", "--file", type=str, help="path of an XML file", required=True)
-    parser.add_argument("-o", "--output", type=str, help="output file name", required=True)
+    parser.add_argument('-f', '--file', type=str, help='path of an XML file', required=True)
+    parser.add_argument('-o', '--output', type=str, help='output file name', required=True)
     args = parser.parse_args()
 
     try:

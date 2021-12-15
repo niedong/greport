@@ -70,8 +70,7 @@
 
               <h4 class="number-container">
                 <span class="badge badge-pill badge-info">
-                  Pass rate: {{ (test_overview.tests - test_overview.failures) /
-                  test_overview.tests * 100 }}%
+                  Pass rate: {{ test_overview.passrate }}%
                 </span>
               </h4>
 
@@ -156,8 +155,7 @@
 
               <h4 class="number-container">
                 <span class="badge badge-pill badge-info">
-                  Pass rate: {{ (test_suite.tests - test_suite.failures) / test_suite.tests * 100
-                  }}%
+                  Pass rate: {{ test_suite.passrate }}%
                 </span>
               </h4>
 
@@ -288,8 +286,7 @@
       }
 
       function generateTestSuiteName(testSuiteName, len, newName) {
-        var tempName = testSuiteName.slice(0, -len) + newName;
-        return tempName;
+        return testSuiteName.slice(0, -len) + newName;
       }
 
       function generateID(testSuiteID) {
