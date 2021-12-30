@@ -180,9 +180,11 @@
             <div id={{ test.name + "FailedCollapse" }} class="collapse" aria-labelledby={{ test.name + "FailedHeading"
               }} data-parent={{ "#" + test_suite.name + "FailedTests" }}>
               <div class="card-body">
-                <h5 class="card-title">{{ "Time: " + test.time }}</h5>
+                <h5 class="card-title">{{ "Timestamp: " + test.timestamp +
+                  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Duration: " +
+                  test.time }}</h5>
                 {% for failure in test.failures %}
-                <p class="card-text">{{ "Failure: " + failure.failure }}</p>
+                <h6 class="card-text">{{ "Failure: " + failure.failure }}</h6>
                 {% endfor %}
               </div>
             </div>
@@ -207,7 +209,9 @@
             <div id={{ test.name + "PassedCollapse" }} class="collapse" aria-labelledby={{ test.name + "PassedHeading"
               }} data-parent={{ "#" + test_suite.name + "PassedTests" }}>
               <div class="card-body">
-                <h5 class="card-title">{{ "Time: " + test.time }}</h5>
+                <h5 class="card-title">{{ "Timestamp: " + test.timestamp +
+                  "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Duration: " +
+                  test.time }}</h5>
               </div>
             </div>
           </div>

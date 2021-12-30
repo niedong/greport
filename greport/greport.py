@@ -1,13 +1,7 @@
-import os
-import sys
-import argparse
-
-from jinja2 import Environment
-import xml.etree.ElementTree as ElementTree
-
-
 class GTemplate:
     def __init__(self):
+        from jinja2 import Environment
+
         self._environment = Environment()
 
     @property
@@ -16,12 +10,14 @@ class GTemplate:
 
     @staticmethod
     def load_file(filename):
-        with open(filename, 'r') as file:
+        with open(filename, 'r', encoding='utf-8') as file:
             result = file.read()
         return result
 
     @staticmethod
     def get_template_filepath(filename):
+        import os
+
         path = os.path.dirname(os.path.abspath(__file__))
         return os.path.join(path, filename)
 
@@ -31,6 +27,8 @@ class GTemplate:
 
 class GReport:
     def __init__(self, filename):
+        import xml.etree.ElementTree as ElementTree
+
         self._tree = ElementTree.parse(filename)
 
     @property
@@ -42,35 +40,39 @@ class GReport:
         return self.tree.getroot()
 
     def parse_to_json(self):
+        def _getattr(node, attr):
+            return node.attrib[attr]
+
         json = {
-            'name': self.root.attrib['name'],
-            'tests': int(self.root.attrib['tests']),
-            'failures': int(self.root.attrib['failures']),
-            'disabled': int(self.root.attrib['disabled']),
+            'name': _getattr(self.root, 'name'),
+            'tests': int(_getattr(self.root, 'tests')),
+            'failures': int(_getattr(self.root, 'failures')),
+            'disabled': int(_getattr(self.root, 'disabled')),
             'passrate': float(),
             'testsuites': list()
         }
 
         for child in self.root:
             suite = {
-                'name': child.attrib['name'],
-                'tests': int(child.attrib['tests']),
-                'failures': int(child.attrib['failures']),
-                'disabled': int(child.attrib['disabled']),
+                'name': _getattr(child, 'name'),
+                'tests': int(_getattr(child, 'tests')),
+                'failures': int(_getattr(child, 'failures')),
+                'disabled': int(_getattr(child, 'disabled')),
                 'passrate': float()
             }
 
             test = list()
             for testcase in child:
                 info = {
-                    'name': testcase.attrib['name'],
-                    'time': testcase.attrib['time'],
-                    'status': testcase.attrib['status'].upper()
+                    'name': _getattr(testcase, 'name'),
+                    'time': _getattr(testcase, 'time'),
+                    'timestamp': _getattr(testcase, 'timestamp').replace('T', ' '),
+                    'status': _getattr(testcase, 'status').upper()
                 }
                 failures = list()
                 for failure in testcase:
                     failures.append({
-                        'failure': failure.attrib['message']
+                        'failure': _getattr(failure, 'message')
                     })
 
                 if failures:
@@ -91,11 +93,13 @@ class GReport:
         json = self.parse_to_json()
         template = GTemplate().get_template(template_file)
 
-        with open(output, 'w') as file:
+        with open(output, 'w', encoding='utf-8') as file:
             file.write(template.render(test_overview=json, test_suites=json['testsuites']))
 
 
 def main():
+    import argparse
+
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--file', type=str, help='path of an XML file', required=True)
     parser.add_argument('-o', '--output', type=str, help='output file name', required=True)
@@ -104,8 +108,7 @@ def main():
     try:
         GReport(args.file).create_html(args.output)
     except Exception as e:
-        print('greport: {}'.format(e))
-        sys.exit(1)
+        print('greport: error: {}'.format(e))
 
 
 if __name__ == '__main__':

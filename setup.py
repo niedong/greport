@@ -5,7 +5,7 @@ with open("README.md", "r") as file:
 
 setup(
     name='greport',
-    version='0.1.8',
+    version='0.1.9',
     description='Generate html from googletest xml file',
     long_description=long_description,
     long_description_content_type='text/markdown',
