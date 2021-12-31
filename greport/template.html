@@ -7,7 +7,6 @@
 
   <style>
     .number-container {
-      padding: 20px;
       text-align: center;
     }
 
@@ -183,8 +182,11 @@
                 <h5 class="card-title">{{ "Timestamp: " + test.timestamp +
                   "&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;Duration: " +
                   test.time }}</h5>
+                <hr />
                 {% for failure in test.failures %}
                 <h6 class="card-text">{{ "Failure: " + failure.failure }}</h6>
+                {% if not loop.last %}
+                <hr />{% endif %}
                 {% endfor %}
               </div>
             </div>
